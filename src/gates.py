@@ -1,14 +1,5 @@
 import numpy as np
 
-def gate(function):
-    operation = function()
-    def result(qbits, positions):
-        relevantQbits = np.take(qbits, positions)
-        newQbits = operation * relevantQbits
-        np.put(qbits, positions, newQbits)
-        return qbits
-    return result
-
 def extractPosition(i, positions):
     positionsAsBinary = sum([1 << position for position in positions])
     relevantBits = i & positionsAsBinary
@@ -46,6 +37,17 @@ cnot = np.array([
     [0, 1, 0, 0],
     [0, 0, 0, 1],
     [0, 0, 1, 0]
+])
+
+ccnot = np.array([
+    [1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 1, 0]
 ])
 
 print(expand(swap, 3, [0, 2]))
