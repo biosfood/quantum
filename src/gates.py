@@ -6,7 +6,7 @@ def extractPosition(i, positions):
     result = sum([((relevantBits >> position) & 1) << i for i, position in enumerate(positions)])
     return result
 
-def expand(operator, nQbits, positions):
+def expand(nQbits, operator, positions):
     nStates = 2**nQbits
     result = np.zeros([nStates, nStates])
     positionsAsBinary = sum([1 << position for position in positions])
@@ -50,4 +50,34 @@ ccnot = np.array([
     [0, 0, 0, 0, 0, 0, 1, 0]
 ])
 
-print(expand(swap, 3, [0, 2]))
+n = 12 # 8 in, 4 out
+
+steps = [
+    expand(n, cnot,  [7, 8]),
+    expand(n, ccnot, [6, 8, 9]),
+    expand(n, ccnot, [5, 6, 8]),
+    expand(n, ccnot, [4, 7, 9]),
+    expand(n, cnot,  [3, 10]),
+    expand(n, cnot,  [2, 10]),
+    expand(n, ccnot, [5, 8, 10]),
+    expand(n, ccnot, [4, 10,11]),
+    expand(n, ccnot, [1, 3, 11]),
+    expand(n, ccnot, [0, 9, 10]),
+    expand(n, ccnot, [8, 9, 10]),
+    expand(n, ccnot, [0, 4, 11]),
+    expand(n, ccnot, [1, 8, 11]),
+    expand(n, ccnot, [2, 10,11]),
+    expand(n, ccnot, [8, 10,11]),
+    expand(n, cnot,  [9, 8]),
+]
+
+forward = np.identity(2**n)
+
+print(forward)
+
+for step in steps:
+    forward = forward @ step
+
+test = np.random.rand(2**n)
+
+print(forward, test, test @ forward)
