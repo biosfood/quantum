@@ -8,14 +8,14 @@ def extractPosition(i, positions, positionsAsBinary):
 
 def expand(nQbits, operator, positions):
     nStates = 2**nQbits
+    nPos = 2**len(positions)
     result = np.zeros([nStates, nStates])
     positionsAsBinary = sum([1 << position for position in positions])
     for i in range(nStates):
         iPos = extractPosition(i, positions, positionsAsBinary)
-        for j in range(nStates):
-            jPos = extractPosition(j, positions, positionsAsBinary)
-            if (~positionsAsBinary & i) == (~positionsAsBinary & j):
-                result[i][j] = operator[iPos, jPos]
+        for jPos in range(nPos):
+            j = (i & ~positionsAsBinary) + sum([((jPos >> k) & 1) << position for k, position in enumerate(positions)])
+            result[i][j] = operator[iPos, jPos]
     return result
 
 start = time.time()
