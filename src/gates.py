@@ -1,7 +1,7 @@
 import numpy as np
+import time
 
-def extractPosition(i, positions):
-    positionsAsBinary = sum([1 << position for position in positions])
+def extractPosition(i, positions, positionsAsBinary):
     relevantBits = i & positionsAsBinary
     result = sum([((relevantBits >> position) & 1) << i for i, position in enumerate(positions)])
     return result
@@ -11,14 +11,14 @@ def expand(nQbits, operator, positions):
     result = np.zeros([nStates, nStates])
     positionsAsBinary = sum([1 << position for position in positions])
     for i in range(nStates):
-        iPos = extractPosition(i, positions)
+        iPos = extractPosition(i, positions, positionsAsBinary)
         for j in range(nStates):
-            jPos = extractPosition(j, positions)
+            jPos = extractPosition(j, positions, positionsAsBinary)
             if (~positionsAsBinary & i) == (~positionsAsBinary & j):
                 result[i][j] = operator[iPos, jPos]
     return result
 
-
+start = time.time()
 
 swap = np.array([
     [1, 0, 0, 0],
@@ -81,3 +81,7 @@ for step in steps:
 test = np.random.rand(2**n)
 
 print(forward, test, test @ forward)
+
+end = time.time()
+
+print(f'took {end-start} seconds')
